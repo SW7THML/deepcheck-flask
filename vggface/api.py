@@ -19,7 +19,7 @@ def load_unknown_users(unknown_dir):
 
 def train(uid, dir):
     print('train function called')
-    unknown_dir = "/Users/tantara/Downloads/thumbnails_features_deduped_sample"
+    unknown_dir = "./unknown"
     unknown_users = load_unknown_users(unknown_dir)
     attendant_users, faces = vggface.load_users(dir)
     vggface.augment_images(faces, dir + "/augmented")
@@ -46,7 +46,7 @@ def validate(uid):
 
 def identify(uid, dir, test_dir, face_ids):
     print('identify function called')
-    unknown_dir = "/Users/tantara/Downloads/thumbnails_features_deduped_sample"
+    unknown_dir = "./unknown"
     unknown_users = load_unknown_users(unknown_dir)
     attendant_users, faces = vggface.load_users(dir)
 

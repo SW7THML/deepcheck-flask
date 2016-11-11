@@ -167,7 +167,6 @@ def load_train(attendant_dir, attendant_users, unknown_dir = "", unknown_users =
         images = glob.glob("{0}/{1}/*.jpg".format(unknown_dir, name))
         random.shuffle(images)
         t = int(40 / len(unknown_users))
-        t = 40
         images = images[0:t]
         faces[name] = {
             'images': images
