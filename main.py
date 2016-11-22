@@ -45,8 +45,8 @@ import cv2
 @app.route('/demo', methods=['GET', 'POST'])
 def demo():
   args = request.args
-  width = args.get('width')
-  height = args.get('height')
+  width = int(args.get('width'))
+  height = int(args.get('height'))
   file = request.files['photo']
 
   weight_path = "."
