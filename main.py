@@ -41,6 +41,39 @@ def timestamp():
   return str(randrange(100, 1000)) + '-' + stamp 
 
 from urllib import urlopen
+@app.route('/demo', methods=['GET', 'POST'])
+def demo():
+  args = request.args
+  file = request.files['photo']
+
+  weight_path = "."
+  img_dir = timestamp()
+  mkdir(img_dir)
+
+  file.save(img_dir + '/img.jpg')
+
+  detector = FaceDetectionRegressor(weight_path)
+  predictions = detector.predict(img_dir)
+
+  print predictions
+  #TODO face detection using 'url'
+  faces = []
+  for prediction in predictions[0][0]:
+    faces.append({
+      "left": prediction[0],
+      "width": prediction[1] - prediction[0],
+      "top": prediction[2],
+      "height": prediction[3] - prediction[2],
+      })
+
+  data = {
+          'msg': 'detect',
+          'faces': faces
+          }
+
+  return jsonify(data)
+
+
 @app.route('/detect', methods=['GET', 'POST'])
 def detect():
   args = request.args
