@@ -1,3 +1,6 @@
-[submodule "face-recognition"]
-	path = face-recognition
+[submodule "face_recognition"]
+	path = face_recognition
 	url = git@github.com:SW7THML/face-recognition.git
+[submodule "face_detection"]
+	path = face_detection
+	url = git@github.com:SW7THML/face-detection.git

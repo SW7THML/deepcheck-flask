@@ -1,13 +1,15 @@
 from flask import Flask, request, Response, jsonify
 app = Flask(__name__)
 
-import sys
-sys.path.append('./face-recognition')
+# import sys
+# sys.path.append('./face-recognition')
+# sys.path.append('./face-detection')
 
 import numpy as np
-from lib.preprocessing import ImageAugmentator
-from lib.utils import Loader, Maximizer
-from lib.model import FaceRecognitionClassifier
+from face_recognition.lib.preprocessing import ImageAugmentator
+from face_recognition.lib.utils import Loader, Maximizer
+from face_recognition.lib.model import FaceRecognitionClassifier
+from face_detection.lib.model import FaceDetectionRegressor
 import glob
 import os
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
@@ -35,6 +37,13 @@ def load_faces_to_tensor(dir, user_list):
 def detect():
   args = request.args
   url = args.get('url') # 'url'
+
+  weight_path = ""
+  image_dir = "/Users/tantara/Desktop/tmp"
+
+  detector = FaceDetectionRegressor(weight_path)
+
+  prediction = detector.predict(image_dir)
 
   #TODO face detection using 'url'
   faces = []
