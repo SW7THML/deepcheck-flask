@@ -44,8 +44,8 @@ from urllib import urlopen
 import cv2
 @app.route('/demo', methods=['GET', 'POST'])
 def demo():
-  width = int(request.form('width'))
-  height = int(arequestrgs.form('height'))
+  width = int(request.form['width'])
+  height = int(arequestrgs.form['height'])
   file = request.files['photo']
 
   weight_path = "."
