@@ -33,26 +33,42 @@ def load_faces_to_tensor(dir, user_list):
 
   return X
 
+from os import mkdir
+from datetime import datetime
+from random import randrange
+def timestamp():
+  stamp = datetime.strftime(datetime.now(), '%Y%m%d-%H%M%S')
+  return str(randrange(100, 1000)) + '-' + stamp 
+
+from urllib import urlopen
 @app.route('/detect', methods=['GET', 'POST'])
 def detect():
   args = request.args
   url = args.get('url') # 'url'
 
-  weight_path = ""
-  image_dir = "/Users/tantara/Desktop/tmp"
+  weight_path = "."
+  img_dir = timestamp()
+  mkdir(img_dir)
+
+  req = urlopen(url)
+  img = req.read()
+
+  file = open(img_dir + '/img.jpg', 'w')
+  file.write(img)
+  file.close()
 
   detector = FaceDetectionRegressor(weight_path)
-
-  prediction = detector.predict(image_dir)
+  predictions = detector.predict(img_dir)
 
   #TODO face detection using 'url'
   faces = []
-  faces.append({
-    "width": 78,
-    "height": 78,
-    "left": 394,
-    "top": 54
-    })
+  for prediction in predictions[0][0]:
+    faces.append({
+      "left": prediction[0],
+      "width": prediction[1] - prediction[0],
+      "top": prediction[2],
+      "height": prediction[3] - prediction[2],
+      })
 
   data = {
           'msg': 'detect',
