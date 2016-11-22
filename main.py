@@ -46,14 +46,14 @@ def detect():
   args = request.args
   url = args.get('url') # 'url'
 
-  weight_path = "."
+  weight_path = "/home/deepcheck/Workspace/live/deepcheckflask"
   img_dir = timestamp()
   mkdir(img_dir)
 
   req = urlopen(url)
   img = req.read()
 
-  file = open(img_dir + '/img.jpg', 'w')
+  file = open(img_dir + '/img.jpg', 'wb')
   file.write(img)
   file.close()
 
@@ -141,4 +141,4 @@ def identify():
   return jsonify(faces)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
