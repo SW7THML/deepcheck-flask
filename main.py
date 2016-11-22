@@ -55,7 +55,7 @@ def demo():
   file.save(img_dir + '/img.jpg')
   img = cv2.imread(img_dir + '/img.jpg')
   img = cv2.resize(img, (width, height)) 
-  cv2.imwrite(img_Dir + '/img.jpg', img)
+  cv2.imwrite(img_dir + '/img.jpg', img)
 
   detector = FaceDetectionRegressor(weight_path)
   predictions = detector.predict(img_dir)
