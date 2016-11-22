@@ -33,12 +33,16 @@ def load_faces_to_tensor(dir, user_list):
 
   return X
 
-from os import mkdir
+from os import mkdir, rmdir, remove
 from datetime import datetime
 from random import randrange
 def timestamp():
   stamp = datetime.strftime(datetime.now(), '%Y%m%d-%H%M%S')
-  return str(randrange(100, 1000)) + '-' + stamp 
+  return 'temp/' + str(randrange(100, 1000)) + '-' + stamp 
+
+def delete(path):
+  os.remove(path + '/img.jpg')
+  os.rmdir(path)
 
 from urllib import urlopen
 import cv2
@@ -60,8 +64,6 @@ def demo():
   detector = FaceDetectionRegressor(weight_path)
   predictions = detector.predict(img_dir)
 
-  print predictions
-  #TODO face detection using 'url'
   faces = []
   for prediction in predictions[0][0]:
     faces.append({
@@ -71,13 +73,14 @@ def demo():
       "height": prediction[3] - prediction[2],
       })
 
+  delete(img_dir)	
+
   data = {
           'msg': 'detect',
           'faces': faces
           }
 
   return jsonify(data)
-
 
 @app.route('/detect', methods=['GET', 'POST'])
 def detect():
@@ -107,6 +110,8 @@ def detect():
       "top": prediction[2],
       "height": prediction[3] - prediction[2],
       })
+
+  delete(img_dir)
 
   data = {
           'msg': 'detect',
