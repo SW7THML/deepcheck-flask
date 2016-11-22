@@ -41,9 +41,12 @@ def timestamp():
   return str(randrange(100, 1000)) + '-' + stamp 
 
 from urllib import urlopen
+import cv2
 @app.route('/demo', methods=['GET', 'POST'])
 def demo():
   args = request.args
+  width = args.get('width')
+  height = args.get('height')
   file = request.files['photo']
 
   weight_path = "."
@@ -51,6 +54,9 @@ def demo():
   mkdir(img_dir)
 
   file.save(img_dir + '/img.jpg')
+  img = cv2.imread(img_dir + '/img.jpg')
+  img = cv2.resize(img, (width, height)) 
+  cv2.imwrite(img_Dir + '/img.jpg', img)
 
   detector = FaceDetectionRegressor(weight_path)
   predictions = detector.predict(img_dir)
