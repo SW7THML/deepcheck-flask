@@ -38,11 +38,32 @@ from datetime import datetime
 from random import randrange
 def timestamp():
   stamp = datetime.strftime(datetime.now(), '%Y%m%d-%H%M%S')
-  return 'temp/' + str(randrange(100, 1000)) + '-' + stamp 
+  stamp = str('temp/' + str(randrange(100, 1000)) + '-' + stamp + '.jpg')
+  return stamp
 
-def delete(path):
-  os.remove(path + '/img.jpg')
-  os.rmdir(path)
+def delete(name):
+  os.remove(name)
+
+def pack(predictions):
+  faces = []
+  for prediction in predictions:
+	x = prediction['x']
+	y = prediction['y']
+	w = prediction['w']
+	h = prediction['h']
+	faces.append({
+      "left": x - w/2.,
+      "width": w,
+      "top": y - h/2.,
+      "height": h,
+      })
+
+  data = {
+    'msg': 'detact',
+    'faces': faces,
+    'face_count': len(faces)	
+  }
+  return jsonify(data) 
 
 from urllib import urlopen
 import cv2
@@ -53,34 +74,19 @@ def demo():
   file = request.files['photo']
 
   weight_path = "."
-  img_dir = timestamp()
-  mkdir(img_dir)
+  imgname = timestamp()
 
-  file.save(img_dir + '/img.jpg')
-  img = cv2.imread(img_dir + '/img.jpg')
+  file.save(imgname)
+  img = cv2.imread(imgname)
   img = cv2.resize(img, (width, height)) 
-  cv2.imwrite(img_dir + '/img.jpg', img)
+  cv2.imwrite(imgname, img)
 
   detector = FaceDetectionRegressor(weight_path)
-  predictions = detector.predict(img_dir)
+  predictions = detector.predict(imgname, threshold=0.4, merge=True)
 
-  faces = []
-  for prediction in predictions[0][0]:
-    faces.append({
-      "left": prediction[0],
-      "width": prediction[1] - prediction[0],
-      "top": prediction[2],
-      "height": prediction[3] - prediction[2],
-      })
+  delete(imgname)	
 
-  delete(img_dir)	
-
-  data = {
-          'msg': 'detect',
-          'faces': faces
-          }
-
-  return jsonify(data)
+  return pack(predictions)
 
 @app.route('/detect', methods=['GET', 'POST'])
 def detect():
@@ -88,37 +94,21 @@ def detect():
   url = args.get('url') # 'url'
 
   weight_path = "/home/deepcheck/Workspace/live/deepcheckflask"
-  img_dir = timestamp()
-  mkdir(img_dir)
+  imgname = timestamp()
 
   req = urlopen(url)
   img = req.read()
 
-  file = open(img_dir + '/img.jpg', 'wb')
+  file = open(imgname, 'wb')
   file.write(img)
   file.close()
 
   detector = FaceDetectionRegressor(weight_path)
-  predictions = detector.predict(img_dir)
+  predictions = detector.predict(imgname, threshold=0.4, merge=True)
 
-  #TODO face detection using 'url'
-  faces = []
-  for prediction in predictions[0][0]:
-    faces.append({
-      "left": prediction[0],
-      "width": prediction[1] - prediction[0],
-      "top": prediction[2],
-      "height": prediction[3] - prediction[2],
-      })
+  delete(imgname)
 
-  delete(img_dir)
-
-  data = {
-          'msg': 'detect',
-          'faces': faces
-          }
-
-  return jsonify(data)
+  return pack(predictions)
 
 @app.route('/train', methods=['GET', 'POST'])
 def train():
@@ -184,4 +174,4 @@ def identify():
   return jsonify(faces)
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+  app.run(debug=True, host="0.0.0.0")
